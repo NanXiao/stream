@@ -15,11 +15,6 @@ static mut A: [StreamType; STREAM_ARRAY_SIZE] = [0.0; STREAM_ARRAY_SIZE];
 static mut B: [StreamType; STREAM_ARRAY_SIZE] = [0.0; STREAM_ARRAY_SIZE];
 static mut C: [StreamType; STREAM_ARRAY_SIZE] = [0.0; STREAM_ARRAY_SIZE];
 
-
-/*
-mintime[4] = {FLT_MAX,FLT_MAX,FLT_MAX,FLT_MAX};
-
-*/
 fn main() {
     /* --- SETUP --- determine precision and check timing --- */
     println!("{}", HLINE);
