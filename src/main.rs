@@ -1,8 +1,8 @@
+extern crate time;
+
 use std::cmp;
 use std::mem;
 use std::f64;
-
-extern crate time;
 
 type StreamType = f64;
 
