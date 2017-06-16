@@ -21,22 +21,29 @@ fn main() {
     println!("STREAM version $Revision: 5.10 $");
     println!("{}", HLINE);
     let bytes_per_word = mem::size_of::<StreamType>();
-    println!("This system uses {} bytes per array element.", bytes_per_word);
+    println!(
+        "This system uses {} bytes per array element.",
+        bytes_per_word
+    );
 
     println!("{}", HLINE);
 
     println!("Array size = {} (elements)", STREAM_ARRAY_SIZE);
-    println!("Memory per array = {:.1} MiB (= {:.1} GiB).",
-             bytes_per_word as f64 * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0),
-             bytes_per_word as f64 * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0 / 1024.0));
-    println!("Total memory required = {:.1} MiB (= {:.1} GiB).",
-            (3.0 * bytes_per_word as f64) * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0),
-            (3.0 * bytes_per_word as f64) * (STREAM_ARRAY_SIZE as f64 / 1024.0/1024./1024.0));
+    println!(
+        "Memory per array = {:.1} MiB (= {:.1} GiB).",
+        bytes_per_word as f64 * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0),
+        bytes_per_word as f64 * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0 / 1024.0)
+    );
+    println!(
+        "Total memory required = {:.1} MiB (= {:.1} GiB).",
+        (3.0 * bytes_per_word as f64) * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024.0),
+        (3.0 * bytes_per_word as f64) * (STREAM_ARRAY_SIZE as f64 / 1024.0 / 1024. / 1024.0)
+    );
     println!("Each kernel will be executed {} times.", NTIMES);
     println!(" The *best* time for each kernel (excluding the first iteration)");
     println!(" will be used to compute the reported bandwidth.");
-    
-	println!("{}", HLINE);
+
+    println!("{}", HLINE);
 
     unsafe {
         for i in 0..STREAM_ARRAY_SIZE {
@@ -47,11 +54,14 @@ fn main() {
     }
 
     let mut quantum = check_tick();
-    if  quantum >= 1 {
-        println!("Your clock granularity/precision appears to be {} microseconds.", quantum);
+    if quantum >= 1 {
+        println!(
+            "Your clock granularity/precision appears to be {} microseconds.",
+            quantum
+        );
     } else {
-	    println!("Your clock granularity appears to be less than one microsecond.");
-	    quantum = 1;
+        println!("Your clock granularity appears to be less than one microsecond.");
+        quantum = 1;
     }
 
     let mut t = time::precise_time_s();
@@ -62,7 +72,10 @@ fn main() {
     }
     t = 1.0E6 * (time::precise_time_s() - t);
 
-    println!("Each test below will take on the order of {} microseconds.", t as i32);
+    println!(
+        "Each test below will take on the order of {} microseconds.",
+        t as i32
+    );
     println!("   (= {} clock ticks)", (t / quantum as f64) as i32);
     println!("Increase the size of the arrays if this shows that");
     println!("you are not getting at least 20 clock ticks per test.");
@@ -78,7 +91,7 @@ fn main() {
 
     /*	--- MAIN LOOP --- repeat test cases NTIMES times --- */
 
-    let scalar:StreamType = 3.0;
+    let scalar: StreamType = 3.0;
     for k in 0..NTIMES {
         times[0][k] = time::precise_time_s();
         unsafe {
@@ -117,20 +130,20 @@ fn main() {
     let mut max_time: [f64; 4] = [0.0; 4];
     let mut min_time: [f64; 4] = [f64::MAX, f64::MAX, f64::MAX, f64::MAX];
 
-    let label: [&'static str; 4] = ["Copy:      ", "Scale:     ",  "Add:       ", "Triad:     "];
+    let label: [&'static str; 4] = ["Copy:      ", "Scale:     ", "Add:       ", "Triad:     "];
     let bytes: [usize; 4] = [
-        2 * bytes_per_word * STREAM_ARRAY_SIZE ,
-        2 * bytes_per_word * STREAM_ARRAY_SIZE ,
-        3 * bytes_per_word * STREAM_ARRAY_SIZE ,
-        3 * bytes_per_word * STREAM_ARRAY_SIZE
+        2 * bytes_per_word * STREAM_ARRAY_SIZE,
+        2 * bytes_per_word * STREAM_ARRAY_SIZE,
+        3 * bytes_per_word * STREAM_ARRAY_SIZE,
+        3 * bytes_per_word * STREAM_ARRAY_SIZE,
     ];
 
     /*	--- SUMMARY --- */
 
-    for k in 1..NTIMES /* note -- skip first iteration */
+    for k in 1..NTIMES
+    /* note -- skip first iteration */
     {
-        for j in 0..4
-        {
+        for j in 0..4 {
             avg_time[j] = avg_time[j] + times[j][k];
             if min_time[j] > times[j][k] {
                 min_time[j] = times[j][k];
@@ -143,13 +156,16 @@ fn main() {
 
     println!("Function    Best Rate MB/s  Avg time     Min time     Max time");
     for j in 0..4 {
-        avg_time[j] = avg_time[j] / (NTIMES-1) as f64;
+        avg_time[j] = avg_time[j] / (NTIMES - 1) as f64;
 
-        println!("{}{:12.1}  {:11.6}  {:11.6}  {:11.6}", label[j],
+        println!(
+            "{}{:12.1}  {:11.6}  {:11.6}  {:11.6}",
+            label[j],
             1.0E-06 * bytes[j] as f64 / min_time[j],
             avg_time[j],
             min_time[j],
-            max_time[j]);
+            max_time[j]
+        );
     }
     println!("{}", HLINE);
 
@@ -174,7 +190,7 @@ fn check_tick() -> i32 {
 
     let mut min_delta = 1000000;
     for i in 1..M {
-        let delta = (1.0E6 * (times_found[i] - times_found[i-1])) as i32;
+        let delta = (1.0E6 * (times_found[i] - times_found[i - 1])) as i32;
         min_delta = cmp::min(min_delta, cmp::max(delta, 0));
     }
 
@@ -220,8 +236,16 @@ fn check_stream_results() {
 
     if (a_avg_err / aj).abs() > epsilon {
         err = err + 1;
-        println!("Failed Validation on array a[], AvgRelAbsErr > epsilon ({})", epsilon);
-        println!("     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",aj, a_avg_err, a_avg_err.abs()/aj);
+        println!(
+            "Failed Validation on array a[], AvgRelAbsErr > epsilon ({})",
+            epsilon
+        );
+        println!(
+            "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",
+            aj,
+            a_avg_err,
+            a_avg_err.abs() / aj
+        );
         for j in 0..STREAM_ARRAY_SIZE {
             unsafe {
                 if (A[j] / aj - 1.0).abs() > epsilon {
@@ -234,13 +258,21 @@ fn check_stream_results() {
 
     if (b_avg_err / bj).abs() > epsilon {
         err = err + 1;
-        println!("Failed Validation on array b[], AvgRelAbsErr > epsilon ({})", epsilon);
-        println! ("     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",bj, b_avg_err, b_avg_err.abs()/bj);
-        println! ("     AvgRelAbsErr > Epsilon {}", epsilon);
+        println!(
+            "Failed Validation on array b[], AvgRelAbsErr > epsilon ({})",
+            epsilon
+        );
+        println!(
+            "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",
+            bj,
+            b_avg_err,
+            b_avg_err.abs() / bj
+        );
+        println!("     AvgRelAbsErr > Epsilon {}", epsilon);
         ierr = 0;
         for j in 0..STREAM_ARRAY_SIZE {
             unsafe {
-                if (B[j]/ bj - 1.0).abs() > epsilon {
+                if (B[j] / bj - 1.0).abs() > epsilon {
                     ierr = ierr + 1;
                 }
             }
@@ -250,9 +282,17 @@ fn check_stream_results() {
 
     if (c_avg_err / cj).abs() > epsilon {
         err = err + 1;
-        println! ("Failed Validation on array c[], AvgRelAbsErr > epsilon ({})", epsilon);
-        println! ("     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",cj, c_avg_err, c_avg_err.abs() / cj);
-        println! ("     AvgRelAbsErr > Epsilon ({})",epsilon);
+        println!(
+            "Failed Validation on array c[], AvgRelAbsErr > epsilon ({})",
+            epsilon
+        );
+        println!(
+            "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}",
+            cj,
+            c_avg_err,
+            c_avg_err.abs() / cj
+        );
+        println!("     AvgRelAbsErr > Epsilon ({})", epsilon);
         ierr = 0;
         for j in 0..STREAM_ARRAY_SIZE {
             unsafe {
@@ -265,8 +305,10 @@ fn check_stream_results() {
     }
 
     if err == 0 {
-        println! ("Solution Validates: avg error less than {:e} on all three arrays", epsilon);
+        println!(
+            "Solution Validates: avg error less than {:e} on all three arrays",
+            epsilon
+        );
     }
 
 }
-
